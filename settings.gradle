@@ -1,0 +1,3 @@
+rootProject.name = 'events'
+include 'events-core', 'events-api'
+

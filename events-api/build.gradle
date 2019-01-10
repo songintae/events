@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id "org.asciidoctor.convert" version "1.5.3"
+}
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
+    asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.3.RELEASE'
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+test {
+    outputs.dir snippetsDir
+}
+
+bootJar {
+    dependsOn asciidoctor
+    from("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
+}
+
+build {
+    dependsOn bootJar
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+}
