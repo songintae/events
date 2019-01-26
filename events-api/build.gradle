@@ -3,7 +3,6 @@ plugins {
     id "org.asciidoctor.convert" version "1.5.3"
 }
 
-group 'com.example'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
@@ -13,6 +12,8 @@ repositories {
 }
 
 dependencies {
+    compile('org.modelmapper:modelmapper:2.3.2')
+    implementation('org.springframework.boot:spring-boot-starter-hateoas')
     implementation('org.springframework.boot:spring-boot-starter-web')
     testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
     asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.3.RELEASE'

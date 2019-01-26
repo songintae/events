@@ -1,3 +1,5 @@
+import jdk.internal.dynalink.linker.LinkerServices
+
 buildscript {
     ext {
         springBootVersion = '2.1.1.RELEASE'
@@ -26,12 +28,22 @@ subprojects {
         mavenCentral()
     }
 
+    test {
+        useJUnitPlatform()
+    }
+
     dependencies {
+        compile('javax.validation:validation-api')
+        compile('com.fasterxml.jackson.core:jackson-databind')
+        compile('com.fasterxml.jackson.core:jackson-annotations')
+        compile('com.fasterxml.jackson.core:jackson-core')
+        compile('org.springframework.boot:spring-boot-starter-data-jpa')
         testCompile('org.junit.jupiter:junit-jupiter-api')
         testCompile('org.junit.jupiter:junit-jupiter-params')
+        testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
         testCompile('org.assertj:assertj-core')
-        compileOnly('com.h2database:h2')
-        compileOnly('org.projectlombok:lombok')
+        testCompile('com.h2database:h2')
+        compile('org.projectlombok:lombok')
         testImplementation('org.springframework.boot:spring-boot-starter-test')
     }
 }

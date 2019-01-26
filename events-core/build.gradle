@@ -1,5 +1,42 @@
-plugins {
-    id 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+
+    }
+
+    dependencies {
+        classpath('gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10')
+    }
+
+}
+
+
+projects {
+    apply plugin: 'java'
+    apply plugin: 'com.ewerk.gradle.plugins.querydsl'
+}
+
+
+querydsl {
+    jpa = true
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', querydsl.querydslSourcesDir]
+        }
+    }
+}
+
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
 }
 
 group 'com.example'
@@ -7,12 +44,8 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    implementation('org.modelmapper:modelmapper:2.3.2')
-    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
-    implementation('org.springframework.boot:spring-boot-starter-hateoas')
+    runtimeOnly('mysql:mysql-connector-java')
+    compile('com.querydsl:querydsl-jpa')
+    compile('com.querydsl:querydsl-apt')
 }
