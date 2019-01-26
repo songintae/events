@@ -18,7 +18,6 @@ import java.util.Set;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Getter
 @Entity
-@Setter
 public class Event extends BaseEntity {
     public final static int MIN_PRICE = 0;
     public final static int MAX_PRICE = 200000;
