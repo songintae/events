@@ -1,6 +1,8 @@
 package events.event.controller;
 
 
+import events.account.domain.Account;
+import events.account.domain.CurrentUser;
 import events.event.dto.BriefEventResponse;
 import events.event.dto.EventRequest;
 import events.event.dto.EventResponse;
@@ -16,6 +18,7 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,24 +33,28 @@ public class EventController {
     private EventService eventService;
 
     @PostMapping("")
-    public ResponseEntity create(@RequestBody @Valid EventRequest eventRequest) {
-        EventResponse event = eventService.createEvent(eventRequest);
+    public ResponseEntity create(@RequestBody @Valid EventRequest eventRequest, @CurrentUser Account account) {
+        EventResponse event = eventService.createEvent(eventRequest, account);
 
         ControllerLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(event.getId());
         URI location = selfLinkBuilder.toUri();
 
         Resource<EventResponse> resource = getEventResponseResource(event);
+        resource.add(linkTo(EventController.class).slash(event.getId()).withRel("update"));
+        resource.add(linkTo(EventController.class).slash(event.getId()).withRel("delete"));
         resource.add(new Link("http://localhost:8080/docs/index.html#resources-events-create").withRel("profile"));
         return ResponseEntity.created(location).body(resource);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity read(@PathVariable Long id) {
+    public ResponseEntity read(@PathVariable Long id, @CurrentUser Account account) {
         EventResponse event = eventService.readEvent(id);
 
         Resource<EventResponse> resource = getEventResponseResource(event);
-        resource.add(linkTo(EventController.class).slash(event.getId()).withRel("update"));
-        resource.add(linkTo(EventController.class).slash(event.getId()).withRel("delete"));
+        if(ObjectUtils.isEmpty(account) && event.isRegister(account)) {
+            resource.add(linkTo(EventController.class).slash(event.getId()).withRel("update"));
+            resource.add(linkTo(EventController.class).slash(event.getId()).withRel("delete"));
+        }
         resource.add(new Link("http://localhost:8080/docs/index.html#resources-events-read").withRel("profile"));
         return ResponseEntity.ok(resource);
     }

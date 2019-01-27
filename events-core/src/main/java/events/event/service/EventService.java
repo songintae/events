@@ -1,6 +1,7 @@
 package events.event.service;
 
 
+import events.account.domain.Account;
 import events.common.ResourceNotFoundException;
 import events.event.domain.Event;
 import events.event.dto.BriefEventResponse;
@@ -20,8 +21,8 @@ public class EventService {
     private EventRepository eventRepository;
 
     @Transactional
-    public EventResponse createEvent(EventRequest request) {
-        Event newEvent = Event.of(request);
+    public EventResponse createEvent(EventRequest request, Account register) {
+        Event newEvent = Event.of(request, register);
         Event savedEvent = eventRepository.save(newEvent);
 
         return EventResponse.of(savedEvent);
@@ -43,7 +44,7 @@ public class EventService {
         return EventResponse.of(savedEvent);
     }
 
-    private Event findById(Long id) {
+    Event findById(Long id) {
         return eventRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 Event 입니다."));
     }
     @Transactional

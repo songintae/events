@@ -1,5 +1,7 @@
 package events.event.repository;
 
+import events.account.domain.Account;
+import events.account.repository.AccountRepository;
 import events.event.domain.Event;
 import events.event.dto.BriefEventResponse;
 import events.event.dto.EventRequest;
@@ -16,11 +18,14 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 
+
 @DataJpaTest
 class EventRepositoryTest {
 
     @Autowired
     private EventRepository eventRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Test
     @DisplayName("이벤트 목록 조회 Query 테스트")
@@ -55,7 +60,10 @@ class EventRepositoryTest {
         eventRequest.setBeginEventDateTime(beginEventDateTime);
         eventRequest.setEndEventDateTime(beginEventDateTime.plusHours(8));
 
-        return eventRepository.save(Event.of(eventRequest));
+        Account account = new Account("test@email", "123456");
+        Account register = accountRepository.save(account);
+
+        return eventRepository.save(Event.of(eventRequest,register));
     }
 
 }

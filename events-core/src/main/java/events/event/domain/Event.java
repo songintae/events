@@ -1,15 +1,17 @@
 package events.event.domain;
 
+import events.account.domain.Account;
 import events.common.BaseEntity;
 import events.event.dto.EventRequest;
 import events.event.exception.EventException;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,12 +34,16 @@ public class Event extends BaseEntity {
     private String location;
     private Integer price;
     private Integer availAbleParticipant;
-    @OneToMany(mappedBy = "event")
-    private Set<Attendance> attendances = new HashSet<>();
     private LocalDateTime beginEnrollmentDateTime = LocalDateTime.now();
     private LocalDateTime endEnrollmentDateTime = LocalDateTime.now();
     private LocalDateTime beginEventDateTime = LocalDateTime.now();
     private LocalDateTime endEventDateTime = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "event")
+    private Set<Attendance> attendances = new HashSet<>();
+
+    @OneToOne
+    private Account register;
 
 
     boolean isUpdatable() {
@@ -153,9 +159,17 @@ public class Event extends BaseEntity {
         attendances.add(attendance);
     }
 
-    public static Event of(EventRequest request) {
+    public void amendRegister(Account register) {
+        if (ObjectUtils.isEmpty(register)) {
+            throw new EventException("이벤트 등록자는 필수 항목입니다.");
+        }
+        this.register = register;
+    }
+
+    public static Event of(EventRequest request, Account register) {
         Event instance = new Event();
         instance.map(request);
+        instance.amendRegister(register);
 
         return instance;
     }

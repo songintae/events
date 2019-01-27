@@ -45,6 +45,8 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 dependencies {
+
+    compile('org.springframework.security:spring-security-core')
     runtimeOnly('mysql:mysql-connector-java')
     compile('com.querydsl:querydsl-jpa')
     compile('com.querydsl:querydsl-apt')

@@ -1,9 +1,13 @@
 package events.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import events.account.domain.Account;
+import events.config.BasicAuthInterceptor;
+import events.config.EventsTestWebConfiguration;
+import events.config.MockEvnetsEntityHelper;
 import events.event.domain.Event;
 import events.event.dto.EventRequest;
-import events.event.repository.EventRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +20,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -29,9 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = EventsTestWebConfiguration.class)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
+@Transactional
 @DisplayName("Event Api 테스트")
 class EventControllerTest {
     @Autowired
@@ -39,9 +46,17 @@ class EventControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private EventRepository eventRepository;
+    private MockEvnetsEntityHelper mockEvnetsEntityHelper;
 
+    private Account account;
+    private Event savedEvent;
     private final String EVENT_RESOURCE = "/api/v1/events";
+
+    @BeforeEach
+    void setUp() {
+        savedEvent = mockEvnetsEntityHelper.mockEvent();
+        account = savedEvent.getRegister();
+    }
 
     @Test
     @DisplayName("Event 생성 테스트")
@@ -63,11 +78,12 @@ class EventControllerTest {
 
         // when
         this.mockMvc.perform(post(EVENT_RESOURCE)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(request)))
+                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(status().isCreated())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(jsonPath("name").exists())
                 .andExpect(jsonPath("contents").exists())
                 .andExpect(jsonPath("location").exists())
@@ -108,20 +124,26 @@ class EventControllerTest {
                                 fieldWithPath("endEnrollmentDateTime").description("이벤트 등록 종료시간"),
                                 fieldWithPath("beginEventDateTime").description("이벤트 시작시간"),
                                 fieldWithPath("endEventDateTime").description("이벤트 종료시간"),
+                                fieldWithPath("register.email").description("이벤트 등록자 email"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.events.href").description("link to list"),
+                                fieldWithPath("_links.update.href").description("link to update"),
+                                fieldWithPath("_links.delete.href").description("link to delete"),
                                 fieldWithPath("_links.profile.href").description("link to profile")
                         )
                 ))
         ;
     }
 
+    private String getBasicAuthHeader() {
+        String credential = account.getEmail() + BasicAuthInterceptor.BASIC_AUTH_SPLITTER + MockEvnetsEntityHelper.DEFAULT_PASSWORD;
+        String encodedCredential = Base64.getEncoder().encodeToString(credential.getBytes());
+        return BasicAuthInterceptor.BASIC_AUTH_HEADER + encodedCredential;
+    }
+
     @Test
     @DisplayName("Event 단건 조회 테스트")
     void readEvent() throws Exception {
-        // given
-        Event savedEvent = saveEvent();
-
         // when & then
         this.mockMvc.perform(get(EVENT_RESOURCE + "/{id}", savedEvent.getId()))
                 .andDo(print())
@@ -150,10 +172,9 @@ class EventControllerTest {
                                 fieldWithPath("endEnrollmentDateTime").description("이벤트 등록 종료시간"),
                                 fieldWithPath("beginEventDateTime").description("이벤트 시작시간"),
                                 fieldWithPath("endEventDateTime").description("이벤트 종료시간"),
+                                fieldWithPath("register.email").description("이벤트 등록자 email"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.events.href").description("link to list"),
-                                fieldWithPath("_links.update.href").description("link to update"),
-                                fieldWithPath("_links.delete.href").description("link to delete"),
                                 fieldWithPath("_links.profile.href").description("link to profile")
                         )
                 ))
@@ -173,9 +194,6 @@ class EventControllerTest {
     @Test
     @DisplayName("이벤트 목록 조회")
     void readEvents() throws Exception {
-        //given
-        saveEvent();
-
         this.mockMvc.perform(get(EVENT_RESOURCE))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -207,8 +225,6 @@ class EventControllerTest {
     @Test
     @DisplayName("이벤트 수정 테스트")
     void updateEvent() throws Exception {
-        // given
-        Event savedEvent = saveEvent();
         EventRequest request = new EventRequest();
         request.setName("SpringBoot 스터디 -> REST API 테스트");
         request.setContents("스프링 부트와 JPA 대한 학습");
@@ -261,6 +277,7 @@ class EventControllerTest {
                                 fieldWithPath("endEnrollmentDateTime").description("이벤트 등록 종료시간"),
                                 fieldWithPath("beginEventDateTime").description("이벤트 시작시간"),
                                 fieldWithPath("endEventDateTime").description("이벤트 종료시간"),
+                                fieldWithPath("register.email").description("이벤트 등록자 email"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.events.href").description("link to list"),
                                 fieldWithPath("_links.profile.href").description("link to profile")
@@ -273,9 +290,6 @@ class EventControllerTest {
     @Test
     @DisplayName("Event 삭제 테스트")
     void deleteEvent() throws Exception {
-        // given
-        Event savedEvent = saveEvent();
-
         // when & then
         this.mockMvc.perform(delete(EVENT_RESOURCE + "/{id}", savedEvent.getId()))
                 .andDo(print())
@@ -314,22 +328,5 @@ class EventControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errorMessage").exists())
         ;
-    }
-
-    private Event saveEvent() {
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(20000);
-        request.setLocation("장은빌딩 18층 카페");
-        request.setAvailAbleParticipant(20);
-        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
-
-        return eventRepository.save(Event.of(request));
     }
 }

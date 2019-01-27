@@ -1,5 +1,6 @@
 package events.common;
 
+import events.account.exception.AccountException;
 import events.event.exception.EventException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -19,8 +20,8 @@ import java.util.Optional;
 public class GlobalExceptionHandler {
     private MessageSourceAccessor messageSourceAccessor;
 
-    @ExceptionHandler(value = EventException.class)
-    public ResponseEntity badRequestExceptionHandler(EventException exception) {
+    @ExceptionHandler(value = {EventException.class, AccountException.class})
+    public ResponseEntity badRequestExceptionHandler(RuntimeException exception) {
         ErrorMessage errorMessage = ErrorMessage.of(exception.getMessage());
         return ResponseEntity.badRequest().body(errorMessage);
     }
