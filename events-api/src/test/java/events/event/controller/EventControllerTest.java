@@ -3,7 +3,7 @@ package events.event.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import events.account.domain.Account;
 import events.config.BasicAuthInterceptor;
-import events.config.EventsTestWebConfiguration;
+import events.config.EventsBootTestConfiguration;
 import events.config.MockEvnetsEntityHelper;
 import events.event.domain.Event;
 import events.event.dto.EventRequest;
@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EventsTestWebConfiguration.class)
+@SpringBootTest(classes = EventsBootTestConfiguration.class)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @Transactional

@@ -1,7 +1,7 @@
 package events.event.service;
 
 import events.account.domain.Account;
-import events.config.EventsTestConfiguration;
+import events.config.EventsBootTestConfiguration;
 import events.config.MockEvnetsEntityHelper;
 import events.event.domain.Event;
 import events.event.dto.EventRequest;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = EventsTestConfiguration.class)
+@SpringBootTest(classes = EventsBootTestConfiguration.class)
 class EventServiceTest {
     @Autowired
     private EventService eventService;

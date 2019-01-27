@@ -2,6 +2,7 @@ package events.event.repository;
 
 import events.account.domain.Account;
 import events.account.repository.AccountRepository;
+import events.config.EventsJpaTestConfiguration;
 import events.event.domain.Event;
 import events.event.dto.BriefEventResponse;
 import events.event.dto.EventRequest;
@@ -12,13 +13,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 
-
+@ContextConfiguration(classes = EventsJpaTestConfiguration.class)
 @DataJpaTest
 class EventRepositoryTest {
 
@@ -35,7 +37,7 @@ class EventRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         //when
-        Page<BriefEventResponse> events =  eventRepository.findEvents(pageable);
+        Page<BriefEventResponse> events = eventRepository.findEvents(pageable);
 
         //then
         assertThat(events.getTotalPages()).isEqualTo(1);
@@ -63,7 +65,7 @@ class EventRepositoryTest {
         Account account = new Account("test@email", "123456");
         Account register = accountRepository.save(account);
 
-        return eventRepository.save(Event.of(eventRequest,register));
+        return eventRepository.save(Event.of(eventRequest, register));
     }
 
 }

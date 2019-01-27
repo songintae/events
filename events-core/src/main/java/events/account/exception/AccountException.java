@@ -7,6 +7,4 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AccountException extends RuntimeException {
     private String errorMessage;
-
-
 }

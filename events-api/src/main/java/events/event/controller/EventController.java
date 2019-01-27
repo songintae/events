@@ -18,7 +18,6 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -51,7 +50,7 @@ public class EventController {
         EventResponse event = eventService.readEvent(id);
 
         Resource<EventResponse> resource = getEventResponseResource(event);
-        if(ObjectUtils.isEmpty(account) && event.isRegister(account)) {
+        if(event.isRegister(account)) {
             resource.add(linkTo(EventController.class).slash(event.getId()).withRel("update"));
             resource.add(linkTo(EventController.class).slash(event.getId()).withRel("delete"));
         }

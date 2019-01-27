@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @AllArgsConstructor
-@Import(EventsTestConfiguration.class)
+@Import(EventsBootTestConfiguration.class)
 @Configuration
 public class EventsTestWebConfiguration implements WebMvcConfigurer {
     private AccountService accountService;

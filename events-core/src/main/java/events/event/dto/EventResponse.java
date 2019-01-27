@@ -6,7 +6,6 @@ import events.account.domain.Account;
 import events.account.dto.AccountResponse;
 import events.event.domain.Event;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;

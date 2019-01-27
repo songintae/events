@@ -29,5 +29,4 @@ public class Account {
     public boolean matchPassword(String password, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(password, this.password);
     }
-
 }

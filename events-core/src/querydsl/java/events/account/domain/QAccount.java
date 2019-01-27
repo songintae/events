@@ -1,12 +1,14 @@
 package events.account.domain;
 
-import static com.querydsl.core.types.PathMetadataFactory.*;
-
-import com.querydsl.core.types.dsl.*;
-
-import com.querydsl.core.types.PathMetadata;
-import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.PathMetadata;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.StringPath;
+
+import javax.annotation.Generated;
+
+import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 
 /**
@@ -19,7 +21,11 @@ public class QAccount extends EntityPathBase<Account> {
 
     public static final QAccount account = new QAccount("account");
 
+    public final StringPath email = createString("email");
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final StringPath password = createString("password");
 
     public QAccount(String variable) {
         super(Account.class, forVariable(variable));

@@ -1,13 +1,14 @@
 package events.event.domain;
 
-import static com.querydsl.core.types.PathMetadataFactory.*;
-
-import com.querydsl.core.types.dsl.*;
-
-import com.querydsl.core.types.PathMetadata;
-import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.PathMetadata;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.core.types.dsl.PathInits;
+
+import javax.annotation.Generated;
+
+import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 
 /**
@@ -47,7 +48,7 @@ public class QAttendance extends EntityPathBase<Attendance> {
     public QAttendance(Class<? extends Attendance> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.account = inits.isInitialized("account") ? new events.account.domain.QAccount(forProperty("account")) : null;
-        this.event = inits.isInitialized("event") ? new QEvent(forProperty("event")) : null;
+        this.event = inits.isInitialized("event") ? new QEvent(forProperty("event"), inits.get("event")) : null;
     }
 
 }
