@@ -34,7 +34,6 @@ public class EventController {
     @PostMapping("")
     public ResponseEntity create(@RequestBody @Valid EventRequest eventRequest, @CurrentUser Account account) {
         EventResponse event = eventService.createEvent(eventRequest, account);
-
         ControllerLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(event.getId());
         URI location = selfLinkBuilder.toUri();
 

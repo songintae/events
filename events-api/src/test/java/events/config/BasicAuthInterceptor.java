@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-
 @AllArgsConstructor
 public class BasicAuthInterceptor implements HandlerInterceptor {
     private AccountService accountService;
@@ -30,7 +29,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
         String encodedCredentials = authorization.replaceAll(BASIC_AUTH_HEADER, "");
         String credentials = new String(Base64.getDecoder().decode(encodedCredentials), StandardCharsets.UTF_8);
         String[] values = credentials.split(BASIC_AUTH_SPLITTER);
-        Account account = accountService.login(values[0], values[1]);
+        Account account = accountService.certificate(values[0], values[1]);
 
         HttpSession session = request.getSession();
         SessionUtils.setUserSession(session, account);

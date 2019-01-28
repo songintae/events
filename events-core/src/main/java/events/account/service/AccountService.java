@@ -19,7 +19,7 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    public Account login(String email, String password) {
+    public Account certificate(String email, String password) {
         Account savedAccount = findByEmail(email);
         if(!savedAccount.matchPassword(password, passwordEncoder))
              throw new AccountException("계정 비밀번호가 올바르지 않습니다.");

@@ -51,6 +51,7 @@ public class EventService {
     public EventResponse deleteEvent(Long id) {
         Event savedEvent = findById(id);
         savedEvent.delete();
+
         return EventResponse.of(savedEvent);
     }
 }

@@ -1,9 +1,27 @@
 package events.common;
 
+import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import javax.persistence.Column;
+import javax.persistence.EntityListeners;
+import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
+
+@Getter
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
-    private boolean delete = false;
+    @CreatedDate
+    protected LocalDateTime createDate;
+    @LastModifiedDate
+    protected LocalDateTime lastModifiedDate;
+    @Column(nullable = false)
+    protected Boolean deleted = false;
 
     protected void delete() {
-        delete = true;
+        deleted = true;
     }
 }

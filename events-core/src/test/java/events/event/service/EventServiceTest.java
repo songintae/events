@@ -55,6 +55,8 @@ class EventServiceTest {
         assertThat(savedEvent.getName()).isEqualTo(request.getName());
         assertThat(savedEvent.getContents()).isEqualTo(request.getContents());
         assertThat(savedEvent.getRegister()).isEqualTo(register);
+        assertThat(savedEvent.getCreateDate()).isNotNull();
+        assertThat(savedEvent.getLastModifiedDate()).isNotNull();
     }
 
 
