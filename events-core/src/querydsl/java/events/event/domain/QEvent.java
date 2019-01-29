@@ -22,6 +22,8 @@ public class QEvent extends EntityPathBase<Event> {
 
     public static final QEvent event = new QEvent("event");
 
+    public final events.common.QBaseEntity _super = new events.common.QBaseEntity(this);
+
     public final SetPath<Attendance, QAttendance> attendances = this.<Attendance, QAttendance>createSet("attendances", Attendance.class, QAttendance.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> availAbleParticipant = createNumber("availAbleParticipant", Integer.class);
@@ -32,11 +34,20 @@ public class QEvent extends EntityPathBase<Event> {
 
     public final StringPath contents = createString("contents");
 
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createDate = _super.createDate;
+
+    //inherited
+    public final BooleanPath deleted = _super.deleted;
+
     public final DateTimePath<java.time.LocalDateTime> endEnrollmentDateTime = createDateTime("endEnrollmentDateTime", java.time.LocalDateTime.class);
 
     public final DateTimePath<java.time.LocalDateTime> endEventDateTime = createDateTime("endEventDateTime", java.time.LocalDateTime.class);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;
 
     public final StringPath location = createString("location");
 
