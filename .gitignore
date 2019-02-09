@@ -238,3 +238,7 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/git,java,gradle,intellij,intellij+all,intellij+iml
+
+
+# Project Directories
+*/src/querydsl/
