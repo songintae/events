@@ -1,8 +1,10 @@
 package events.account.domain;
 
+import events.common.BaseEntity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.Column;
@@ -10,11 +12,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor
 @Getter
 @Entity
-public class Account {
+public class Account extends BaseEntity {
+    @Setter
     @Id @GeneratedValue
     private Long id;
     @Column(unique = true)

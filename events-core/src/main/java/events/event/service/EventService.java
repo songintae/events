@@ -37,9 +37,9 @@ public class EventService {
     }
 
     @Transactional
-    public EventResponse updateEvent(Long id, EventRequest request) {
+    public EventResponse updateEvent(Long id, Account account, EventRequest request) {
         Event savedEvent = findById(id);
-        savedEvent.amendEvent(request);
+        savedEvent.amendEvent(account, request);
 
         return EventResponse.of(savedEvent);
     }
@@ -48,9 +48,9 @@ public class EventService {
         return eventRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 Event 입니다."));
     }
     @Transactional
-    public EventResponse deleteEvent(Long id) {
+    public EventResponse deleteEvent(Long id, Account account) {
         Event savedEvent = findById(id);
-        savedEvent.delete();
+        savedEvent.delete(account);
 
         return EventResponse.of(savedEvent);
     }

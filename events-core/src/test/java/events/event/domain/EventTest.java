@@ -1,6 +1,8 @@
 package events.event.domain;
 
 
+import events.account.domain.Account;
+import events.common.UnAuthorizationException;
 import events.event.exception.EventException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -172,11 +174,11 @@ class EventTest {
     }
 
     @Test
-    @DisplayName("Event를 수정가능한지 판단하는 로직 테스트")
-    void isUpdatable() {
+    @DisplayName("Event가 수정 가능한 기간인지 판단하는 로직 테스트")
+    void isBeforeOfAmendDeadLine() {
         event.amendBeginEventDateTime(LocalDateTime.now().plusDays(8));
 
-        assertThat(event.isUpdatable()).isTrue();
+        assertThat(event.isBeforeOfAmendDeadLine()).isTrue();
     }
 
     @Test
@@ -195,12 +197,32 @@ class EventTest {
     @DisplayName("Event 삭제 테스트")
     void delete() {
         // given
+        Account account = new Account();
+        account.setId(1L);
+
+        event.amendRegister(account);
         event.amendAvailAbleParticipant(1);
         event.addAttendance(new Attendance());
 
         // when & then
-        assertThrows(EventException.class, () -> event.delete());
+        assertThrows(UnAuthorizationException.class, () -> event.delete(null));
+
+        assertThrows(EventException.class, () -> event.delete(account));
     }
+
+    @Test
+    @DisplayName("Event 등록자가 맞는지 확인하는 테스트")
+    void isRegister() {
+        Account account = new Account();
+        account.setId(1L);
+
+        event.amendRegister(account);
+
+        // when & then
+        assertThat(event.isRegister(account)).isTrue();
+        assertThat(event.isRegister(new Account())).isFalse();
+    }
+
 
 
 

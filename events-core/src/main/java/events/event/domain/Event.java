@@ -2,6 +2,7 @@ package events.event.domain;
 
 import events.account.domain.Account;
 import events.common.BaseEntity;
+import events.common.UnAuthorizationException;
 import events.event.dto.EventRequest;
 import events.event.exception.EventException;
 import lombok.AccessLevel;
@@ -46,13 +47,17 @@ public class Event extends BaseEntity {
     private Account register;
 
 
-    boolean isUpdatable() {
+    boolean isBeforeOfAmendDeadLine() {
         LocalDateTime deadLine = beginEventDateTime.minusDays(7);
         return !LocalDateTime.now().isAfter(deadLine);
     }
 
-    public void delete() {
-        if(attendances.size() != 0) {
+    public void delete(Account account) {
+        if (!isRegister(account)) {
+            throw new UnAuthorizationException("이벤트 등록자만 수정할 수 있습니다.");
+        }
+
+        if(!attendances.isEmpty()) {
             throw new EventException("수강인원이 1명이라도 존재하면 이벤트를 삭제할 수 없습니다.");
         }
         super.delete();
@@ -159,7 +164,7 @@ public class Event extends BaseEntity {
         attendances.add(attendance);
     }
 
-    public void amendRegister(Account register) {
+    void amendRegister(Account register) {
         if (ObjectUtils.isEmpty(register)) {
             throw new EventException("이벤트 등록자는 필수 항목입니다.");
         }
@@ -174,8 +179,12 @@ public class Event extends BaseEntity {
         return instance;
     }
 
-    public void amendEvent(EventRequest request) {
-        if (!this.isUpdatable()) {
+    public void amendEvent(Account account, EventRequest request) {
+        if (!isRegister(account)) {
+            throw new UnAuthorizationException("이벤트 등록자만 수정할 수 있습니다.");
+        }
+
+        if (!this.isBeforeOfAmendDeadLine()) {
             throw new EventException("이벤트는 시작 시간보다 최소 1주일 전에만 수정 가능합니다.");
         }
         this.map(request);
@@ -191,5 +200,9 @@ public class Event extends BaseEntity {
         this.amendBeginEventDateTime(request.getBeginEventDateTime());
         this.amendEndEventDateTime(request.getEndEventDateTime());
         this.amendAvailAbleParticipant(request.getAvailAbleParticipant());
+    }
+
+    boolean isRegister(Account account) {
+        return register.equals(account);
     }
 }
