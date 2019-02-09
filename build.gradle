@@ -48,6 +48,7 @@ subprojects {
 project(':events-api') {
     dependencies {
         compile project(":events-core")
+        testCompile project(':events-core').sourceSets.test.output
     }
 }
 

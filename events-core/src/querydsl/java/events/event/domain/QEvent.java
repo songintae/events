@@ -22,7 +22,7 @@ public class QEvent extends EntityPathBase<Event> {
 
     public static final QEvent event = new QEvent("event");
 
-    public final events.common.QBaseEntity _super = new events.common.QBaseEntity(this);
+    public final events.common.QBaseEntity _super;
 
     public final SetPath<Attendance, QAttendance> attendances = this.<Attendance, QAttendance>createSet("attendances", Attendance.class, QAttendance.class, PathInits.DIRECT2);
 
@@ -35,10 +35,13 @@ public class QEvent extends EntityPathBase<Event> {
     public final StringPath contents = createString("contents");
 
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> createDate = _super.createDate;
+    public final DateTimePath<java.time.LocalDateTime> createDate;
+
+    // inherited
+    public final events.account.domain.QAccount createdBy;
 
     //inherited
-    public final BooleanPath deleted = _super.deleted;
+    public final BooleanPath deleted;
 
     public final DateTimePath<java.time.LocalDateTime> endEnrollmentDateTime = createDateTime("endEnrollmentDateTime", java.time.LocalDateTime.class);
 
@@ -46,8 +49,11 @@ public class QEvent extends EntityPathBase<Event> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    // inherited
+    public final events.account.domain.QAccount lastModifiedBy;
+
     //inherited
-    public final DateTimePath<java.time.LocalDateTime> lastModifiedDate = _super.lastModifiedDate;
+    public final DateTimePath<java.time.LocalDateTime> lastModifiedDate;
 
     public final StringPath location = createString("location");
 
@@ -75,6 +81,12 @@ public class QEvent extends EntityPathBase<Event> {
 
     public QEvent(Class<? extends Event> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this._super = new events.common.QBaseEntity(type, metadata, inits);
+        this.createDate = _super.createDate;
+        this.createdBy = _super.createdBy;
+        this.deleted = _super.deleted;
+        this.lastModifiedBy = _super.lastModifiedBy;
+        this.lastModifiedDate = _super.lastModifiedDate;
         this.register = inits.isInitialized("register") ? new events.account.domain.QAccount(forProperty("register")) : null;
     }
 

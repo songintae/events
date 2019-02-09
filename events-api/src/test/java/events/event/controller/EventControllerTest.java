@@ -2,7 +2,7 @@ package events.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import events.account.domain.Account;
-import events.config.BasicAuthInterceptor;
+import events.config.BasicAuthFilter;
 import events.config.EventsBootTestConfiguration;
 import events.config.MockEvnetsEntityHelper;
 import events.event.domain.Event;
@@ -136,9 +136,9 @@ class EventControllerTest {
     }
 
     private String getBasicAuthHeader() {
-        String credential = account.getEmail() + BasicAuthInterceptor.BASIC_AUTH_SPLITTER + MockEvnetsEntityHelper.DEFAULT_PASSWORD;
+        String credential = account.getEmail() + BasicAuthFilter.BASIC_AUTH_SPLITTER + MockEvnetsEntityHelper.DEFAULT_PASSWORD;
         String encodedCredential = Base64.getEncoder().encodeToString(credential.getBytes());
-        return BasicAuthInterceptor.BASIC_AUTH_HEADER + encodedCredential;
+        return BasicAuthFilter.BASIC_AUTH_HEADER + encodedCredential;
     }
 
     @Test
