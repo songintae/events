@@ -139,7 +139,7 @@ class EventControllerTest {
     }
 
     @Test
-    @DisplayName("이벤트 생성/구정 오류시 Bad Request 및 메시지가 잘 내려오는지 확인 테스트.")
+    @DisplayName("이벤트 생성/수정 오류시 Bad Request 및 메시지가 잘 내려오는지 확인 테스트.")
     void createEventExceptionTest() throws Exception {
         // given
         EventRequest eventRequest = new EventRequest();
@@ -149,8 +149,9 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(post(EVENT_RESOURCE)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(eventRequest)))
+                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(objectMapper.writeValueAsString(eventRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errorMessage").exists())

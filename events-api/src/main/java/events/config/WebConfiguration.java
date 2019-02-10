@@ -19,6 +19,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(auditorInterceptor());
+        registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/api/v1/events/**");
     }
 
     @Override
@@ -34,6 +35,11 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Bean
     public AuditorInterceptor auditorInterceptor() {
         return new AuditorInterceptor(auditorHolder);
+    }
+
+    @Bean
+    AuthenticationInterceptor authenticationInterceptor() {
+        return new AuthenticationInterceptor();
     }
 
     @Bean

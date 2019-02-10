@@ -17,13 +17,11 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.Objects;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 
@@ -35,10 +33,6 @@ public class EventController {
 
     @PostMapping("")
     public ResponseEntity create(@RequestBody @Valid EventRequest eventRequest, @CurrentUser Account account) {
-        if (Objects.isNull(account)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
         EventResponse event = eventService.createEvent(eventRequest, account);
         ControllerLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(event.getId());
         URI location = selfLinkBuilder.toUri();
@@ -79,10 +73,6 @@ public class EventController {
 
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable Long id, @Valid @RequestBody EventRequest request, @CurrentUser Account account) {
-        if (Objects.isNull(account)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
         EventResponse event =  eventService.updateEvent(id, account, request);
 
         Resource<EventResponse> resource = getEventResponseResource(event);
@@ -92,10 +82,6 @@ public class EventController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id, @CurrentUser Account account) {
-        if (Objects.isNull(account)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
         EventResponse event = eventService.deleteEvent(id, account);
 
         Resource<Long> resource = new Resource<>(event.getId());

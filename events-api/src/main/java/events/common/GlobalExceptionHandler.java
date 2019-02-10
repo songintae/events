@@ -32,6 +32,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
     }
 
+
+    @ExceptionHandler(value = UnAuthenticationException.class)
+    public ResponseEntity unAuthenticationHandler(UnAuthenticationException exception) {
+        ErrorMessage errorMessage = ErrorMessage.of(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+    }
+
     @ExceptionHandler(value = UnAuthorizationException.class)
     public ResponseEntity unAuthorizationHandler(UnAuthorizationException exception) {
         ErrorMessage errorMessage = ErrorMessage.of(exception.getMessage());
