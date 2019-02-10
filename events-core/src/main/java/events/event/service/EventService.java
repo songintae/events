@@ -47,6 +47,7 @@ public class EventService {
     Event findById(Long id) {
         return eventRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 Event 입니다."));
     }
+
     @Transactional
     public EventResponse deleteEvent(Long id, Account account) {
         Event savedEvent = findById(id);

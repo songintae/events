@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 public class LoginController {
     private AccountService accountService;
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public void login(HttpSession session, @RequestBody String email, @RequestBody String password) {
         Account principal = accountService.certificate(email, password);
         SessionUtils.setUserSession(session, principal);

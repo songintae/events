@@ -19,5 +19,4 @@ public class AccountResponse {
         instance.email = account.getEmail();
         return instance;
     }
-
 }

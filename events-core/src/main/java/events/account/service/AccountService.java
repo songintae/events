@@ -27,7 +27,6 @@ public class AccountService {
         return savedAccount;
     }
 
-
     public Account findByEmail(String email) {
         return accountRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("계정을 찾을 수 없습니다."));
     }

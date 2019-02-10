@@ -19,12 +19,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -65,19 +68,7 @@ class EventControllerTest {
     @DisplayName("Event 생성 테스트")
     void createEvent() throws Exception {
         // given
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(10000);
-        request.setLocation("장은빌딩 18층 카페");
-        request.setAvailAbleParticipant(20);
-        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
-
+        EventRequest request = getCreateEventRequest();
 
         // when
         this.mockMvc.perform(post(EVENT_RESOURCE)
@@ -102,17 +93,7 @@ class EventControllerTest {
                         requestHeaders(
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description(MediaTypes.HAL_JSON_UTF8_VALUE)
                         ),
-                        requestFields(
-                                fieldWithPath("name").description("이벤트 명"),
-                                fieldWithPath("contents").description("이벤트 내용"),
-                                fieldWithPath("location").description("이벤트 장소"),
-                                fieldWithPath("price").description("이벤트 가격"),
-                                fieldWithPath("availAbleParticipant").description("참석 가능 인원"),
-                                fieldWithPath("beginEnrollmentDateTime").description("이벤트 등록 시작시간"),
-                                fieldWithPath("endEnrollmentDateTime").description("이벤트 등록 종료시간"),
-                                fieldWithPath("beginEventDateTime").description("이벤트 시작시간"),
-                                fieldWithPath("endEventDateTime").description("이벤트 종료시간")
-                        ),
+                        requestFields(fieldDescriptorsOfEventRequest()),
                         responseHeaders(
                                 headerWithName(HttpHeaders.LOCATION).description(HttpHeaders.LOCATION),
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description(MediaTypes.HAL_JSON_UTF8_VALUE)
@@ -138,6 +119,7 @@ class EventControllerTest {
         ;
     }
 
+
     @Test
     @DisplayName("이벤트 생성/수정 오류시 Bad Request 및 메시지가 잘 내려오는지 확인 테스트.")
     void createEventExceptionTest() throws Exception {
@@ -162,18 +144,7 @@ class EventControllerTest {
     @DisplayName("인증된 사용자만 이벤트를 생성할 수 있다.")
     public void create401Test() throws Exception {
         // given
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(10000);
-        request.setLocation("장은빌딩 18층 카페");
-        request.setAvailAbleParticipant(20);
-        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
+        EventRequest request = getCreateEventRequest();
 
         // when & then
         this.mockMvc.perform(post(EVENT_RESOURCE)
@@ -227,7 +198,7 @@ class EventControllerTest {
     @Test
     @DisplayName("존재하지 않는 Event 조회시 404에러 처리")
     void readEventNotFound() throws Exception {
-        //when & then
+        // when & then
         this.mockMvc.perform(get(EVENT_RESOURCE + "/10000"))
                 .andDo(print())
                 .andExpect(status().isNotFound())
@@ -237,6 +208,7 @@ class EventControllerTest {
     @Test
     @DisplayName("이벤트 목록 조회")
     void readEvents() throws Exception {
+        // when & then
         this.mockMvc.perform(get(EVENT_RESOURCE))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -268,18 +240,8 @@ class EventControllerTest {
     @Test
     @DisplayName("이벤트 수정 테스트")
     void updateEvent() throws Exception {
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디 -> REST API 테스트");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(20000);
-        request.setLocation("삼성빌등 7층 카페");
-        request.setAvailAbleParticipant(20);
-        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
+        // given
+        EventRequest request = getUpdateEventRequest();
 
         // when & then
         this.mockMvc.perform(put(EVENT_RESOURCE + "/{id}", savedEvent.getId())
@@ -299,15 +261,7 @@ class EventControllerTest {
                                 parameterWithName("id").description("이벤트 Id")
                         ),
                         requestFields(
-                                fieldWithPath("name").description("이벤트 명"),
-                                fieldWithPath("contents").description("이벤트 내용"),
-                                fieldWithPath("location").description("이벤트 장소"),
-                                fieldWithPath("price").description("이벤트 가격"),
-                                fieldWithPath("availAbleParticipant").description("참석 가능 인원"),
-                                fieldWithPath("beginEnrollmentDateTime").description("이벤트 등록 시작시간"),
-                                fieldWithPath("endEnrollmentDateTime").description("이벤트 등록 종료시간"),
-                                fieldWithPath("beginEventDateTime").description("이벤트 시작시간"),
-                                fieldWithPath("endEventDateTime").description("이벤트 종료시간")
+                               fieldDescriptorsOfEventRequest()
                         ),
                         responseHeaders(
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description(MediaTypes.HAL_JSON_UTF8_VALUE)
@@ -336,18 +290,7 @@ class EventControllerTest {
     @DisplayName("인증된 사용자만 이벤트를 수정할 수 있다.")
     void update401Test() throws Exception {
         // given
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디 -> REST API 테스트");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(20000);
-        request.setLocation("삼성빌등 7층 카페");
-        request.setAvailAbleParticipant(20);
-        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
+        EventRequest request = getUpdateEventRequest();
 
         // when & then
         this.mockMvc.perform(put(EVENT_RESOURCE + "/{id}", savedEvent.getId())
@@ -361,18 +304,7 @@ class EventControllerTest {
     @DisplayName("등록한 사용자만 이벤트를 수정할 수 있다.")
     void update403Test() throws Exception {
         // given
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디 -> REST API 테스트");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(20000);
-        request.setLocation("삼성빌등 7층 카페");
-        request.setAvailAbleParticipant(20);
-        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
-        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
+        EventRequest request = getUpdateEventRequest();
 
         Account invalidAccount = accountService.createAccount("invalidUser@email.com", MockEvnetsEntityHelper.DEFAULT_PASSWORD);
 
@@ -423,7 +355,7 @@ class EventControllerTest {
     @Test
     @DisplayName("Event 삭제 테스트")
     void delete403Test() throws Exception {
-        //given
+        // given
         Account invalidAccount = accountService.createAccount("invalidUser@email.com", MockEvnetsEntityHelper.DEFAULT_PASSWORD);
 
 
@@ -433,6 +365,53 @@ class EventControllerTest {
                 .andDo(print())
                 .andExpect(status().isForbidden())
         ;
+    }
+
+
+    private EventRequest getCreateEventRequest() {
+        EventRequest request = new EventRequest();
+        request.setName("SpringBoot 스터디");
+        request.setContents("스프링 부트와 JPA 대한 학습");
+        request.setPrice(10000);
+        request.setLocation("장은빌딩 18층 카페");
+        request.setAvailAbleParticipant(20);
+        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
+        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
+        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
+        request.setBeginEventDateTime(beginEventDateTime);
+        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
+        return request;
+    }
+
+    private EventRequest getUpdateEventRequest() {
+        EventRequest request = new EventRequest();
+        request.setName("SpringBoot 스터디 -> REST API 테스트");
+        request.setContents("스프링 부트와 JPA 대한 학습");
+        request.setPrice(20000);
+        request.setLocation("삼성빌등 7층 카페");
+        request.setAvailAbleParticipant(20);
+        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
+        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
+        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
+        request.setBeginEventDateTime(beginEventDateTime);
+        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
+        return request;
+    }
+
+    private List<FieldDescriptor> fieldDescriptorsOfEventRequest() {
+        return Arrays.asList(
+                fieldWithPath("name").description("이벤트 명"),
+                fieldWithPath("contents").description("이벤트 내용"),
+                fieldWithPath("location").description("이벤트 장소"),
+                fieldWithPath("price").description("이벤트 가격"),
+                fieldWithPath("availAbleParticipant").description("참석 가능 인원"),
+                fieldWithPath("beginEnrollmentDateTime").description("이벤트 등록 시작시간"),
+                fieldWithPath("endEnrollmentDateTime").description("이벤트 등록 종료시간"),
+                fieldWithPath("beginEventDateTime").description("이벤트 시작시간"),
+                fieldWithPath("endEventDateTime").description("이벤트 종료시간"));
+
     }
 
 
