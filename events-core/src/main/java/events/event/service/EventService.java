@@ -4,11 +4,13 @@ package events.event.service;
 import events.account.domain.Account;
 import events.common.ResourceNotFoundException;
 import events.event.domain.Event;
+import events.event.domain.EventChangedEvent;
 import events.event.dto.BriefEventResponse;
 import events.event.dto.EventRequest;
 import events.event.dto.EventResponse;
 import events.event.repository.EventRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class EventService {
     private EventRepository eventRepository;
+    private ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public EventResponse createEvent(EventRequest request, Account register) {
@@ -41,6 +44,7 @@ public class EventService {
         Event savedEvent = findById(id);
         savedEvent.amendEvent(account, request);
 
+        eventPublisher.publishEvent(new EventChangedEvent(savedEvent));
         return EventResponse.of(savedEvent);
     }
 
