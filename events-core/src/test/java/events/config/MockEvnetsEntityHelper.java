@@ -40,4 +40,9 @@ public class MockEvnetsEntityHelper {
         Account account = new Account("mockAccount@email.com", passwordEncoder.encode(DEFAULT_PASSWORD));
         return accountRepository.save(account);
     }
+
+    public Account mockAccount(String email) {
+        Account account = new Account(email, passwordEncoder.encode(DEFAULT_PASSWORD));
+        return accountRepository.save(account);
+    }
 }

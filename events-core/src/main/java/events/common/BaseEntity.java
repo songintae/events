@@ -13,13 +13,14 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+public abstract class BaseEntity implements Serializable {
     @CreatedBy
     @OneToOne
     protected Account createdBy;

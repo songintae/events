@@ -343,7 +343,7 @@ class EventControllerTest {
     }
 
     @Test
-    @DisplayName("Event 삭제 테스트")
+    @DisplayName("Event 삭제 인가 테스트")
     void delete401Test() throws Exception {
         // when & then
         this.mockMvc.perform(delete(EVENT_RESOURCE + "/{id}", savedEvent.getId()))
@@ -353,7 +353,7 @@ class EventControllerTest {
     }
 
     @Test
-    @DisplayName("Event 삭제 테스트")
+    @DisplayName("Event 삭제 인증 테스트")
     void delete403Test() throws Exception {
         // given
         Account invalidAccount = accountService.createAccount("invalidUser@email.com", MockEvnetsEntityHelper.DEFAULT_PASSWORD);
@@ -413,8 +413,6 @@ class EventControllerTest {
                 fieldWithPath("endEventDateTime").description("이벤트 종료시간"));
 
     }
-
-
 
     private String getBasicAuthHeader(Account account) {
         String credential = account.getEmail() + BasicAuthFilter.BASIC_AUTH_SPLITTER + MockEvnetsEntityHelper.DEFAULT_PASSWORD;

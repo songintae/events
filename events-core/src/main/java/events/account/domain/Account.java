@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import javax.persistence.Id;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor
 @Getter
+@Audited
 @Entity
 public class Account extends BaseEntity {
     @Setter

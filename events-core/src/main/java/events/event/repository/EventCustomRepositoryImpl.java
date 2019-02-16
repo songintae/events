@@ -36,7 +36,8 @@ public class EventCustomRepositoryImpl extends QuerydslRepositorySupport impleme
                         ))
                 .from(event)
                 .where(event.attendances.size().lt(event.availAbleParticipant)
-                        .and(event.endEnrollmentDateTime.after(LocalDateTime.now())));
+                        .and(event.endEnrollmentDateTime.after(LocalDateTime.now())))
+                .orderBy(event.id.desc());
         JPQLQuery<BriefEventResponse> pageQuery = getQuerydsl().applyPagination(pageable, query);
 
         return new PageImpl<>(pageQuery.fetch(), pageable, pageQuery.fetchResults().getTotal());

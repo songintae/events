@@ -222,8 +222,4 @@ class EventTest {
         assertThat(event.isRegister(account)).isTrue();
         assertThat(event.isRegister(new Account())).isFalse();
     }
-
-
-
-
 }

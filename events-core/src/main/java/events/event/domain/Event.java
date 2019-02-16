@@ -9,6 +9,8 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -20,6 +22,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Getter
+@Audited
 @Entity
 public class Event extends BaseEntity {
     public final static int MIN_PRICE = 0;
@@ -40,6 +43,7 @@ public class Event extends BaseEntity {
     private LocalDateTime beginEventDateTime = LocalDateTime.now();
     private LocalDateTime endEventDateTime = LocalDateTime.now();
 
+    @NotAudited
     @OneToMany(mappedBy = "event")
     private Set<Attendance> attendances = new HashSet<>();
 
@@ -57,7 +61,7 @@ public class Event extends BaseEntity {
             throw new UnAuthorizationException("이벤트 등록자만 수정할 수 있습니다.");
         }
 
-        if(!attendances.isEmpty()) {
+        if (!attendances.isEmpty()) {
             throw new EventException("수강인원이 1명이라도 존재하면 이벤트를 삭제할 수 없습니다.");
         }
         super.delete();
@@ -82,7 +86,7 @@ public class Event extends BaseEntity {
     }
 
     void amendPrice(Integer price) {
-        if(!attendances.isEmpty()) {
+        if (!attendances.isEmpty()) {
             throw new EventException("참석인원이 하명이라도 있으면 가격을 수정할 수 없습니다.");
         }
 
@@ -104,7 +108,7 @@ public class Event extends BaseEntity {
             throw new EventException("이벤트 참석자 가능인원은 0~100명 사이로만 설정해야합니다.");
         }
 
-        if(this.attendances.size() > availAbleParticipant) {
+        if (this.attendances.size() > availAbleParticipant) {
             throw new EventException("참석인원보다 참석가능인원을 작게 설정할 수 없습니다.");
         }
         this.availAbleParticipant = availAbleParticipant;
@@ -134,7 +138,7 @@ public class Event extends BaseEntity {
             throw new EventException("이벤트 시작시간을 과거시간으로 등록할 수 없습니다.");
         }
 
-        if(beginEventDateTime.isBefore(endEnrollmentDateTime)) {
+        if (beginEventDateTime.isBefore(endEnrollmentDateTime)) {
             throw new EventException("이벤트 시작시간을 이벤트 등록 마감시간 이전으로 등록할 수 없습니다.");
         }
 
@@ -156,8 +160,9 @@ public class Event extends BaseEntity {
 
         this.endEventDateTime = endEventDateTime;
     }
+
     void addAttendance(Attendance attendance) {
-        if(!isEnableAttend()) {
+        if (!isEnableAttend()) {
             throw new EventException("이벤트 등록 인원을 초과했습니다.");
         }
         attendance.setEvent(this);
