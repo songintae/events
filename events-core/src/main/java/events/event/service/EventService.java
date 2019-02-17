@@ -25,7 +25,20 @@ public class EventService {
 
     @Transactional
     public EventResponse createEvent(EventRequest request, Account register) {
-        Event newEvent = Event.of(request, register);
+
+        Event newEvent = Event.builder()
+                .name(request.getName())
+                .contents(request.getContents())
+                .price(request.getPrice())
+                .location(request.getLocation())
+                .availAbleParticipant(request.getAvailAbleParticipant())
+                .beginEnrollmentDateTime(request.getBeginEnrollmentDateTime())
+                .endEnrollmentDateTime(request.getEndEnrollmentDateTime())
+                .beginEventDateTime(request.getBeginEventDateTime())
+                .endEventDateTime(request.getEndEventDateTime())
+                .register(register)
+                .build();
+
         Event savedEvent = eventRepository.save(newEvent);
 
         return EventResponse.of(savedEvent);

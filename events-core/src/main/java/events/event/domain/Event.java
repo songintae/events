@@ -5,10 +5,7 @@ import events.common.BaseEntity;
 import events.common.UnAuthorizationException;
 import events.event.dto.EventRequest;
 import events.event.exception.EventException;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.util.ObjectUtils;
@@ -176,12 +173,19 @@ public class Event extends BaseEntity {
         this.register = register;
     }
 
-    public static Event of(EventRequest request, Account register) {
-        Event instance = new Event();
-        instance.map(request);
-        instance.amendRegister(register);
-
-        return instance;
+    @Builder
+    public Event(String name, String contents, String location, Integer price, Integer availAbleParticipant, LocalDateTime beginEnrollmentDateTime, LocalDateTime endEnrollmentDateTime, LocalDateTime beginEventDateTime, LocalDateTime endEventDateTime, Set<Attendance> attendances, Account register) {
+        this.amendName(name);
+        this.amendContents(contents);
+        this.amendLocation(location);
+        this.amendPrice(price);
+        this.amendBeginEnrollmentDateTime(beginEnrollmentDateTime);
+        this.amendEndEnrollmentDateTime(endEnrollmentDateTime);
+        this.amendBeginEventDateTime(beginEventDateTime);
+        this.amendEndEventDateTime(endEventDateTime);
+        this.amendAvailAbleParticipant(availAbleParticipant);
+        this.amendRegister(register);
+        this.attendances = new HashSet<>();
     }
 
     public void amendEvent(Account account, EventRequest request) {
