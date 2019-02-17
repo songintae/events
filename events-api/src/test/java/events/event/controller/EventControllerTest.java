@@ -38,7 +38,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = EventsBootTestConfiguration.class)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
