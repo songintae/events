@@ -11,7 +11,6 @@ import events.event.dto.EventRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +19,6 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,9 +69,9 @@ class EventControllerTest {
 
         // when
         this.mockMvc.perform(post(EVENT_RESOURCE)
-                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(objectMapper.writeValueAsString(request)))
+                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
@@ -123,16 +121,25 @@ class EventControllerTest {
     @DisplayName("이벤트 생성/수정 오류시 Bad Request 및 메시지가 잘 내려오는지 확인 테스트.")
     void createEventExceptionTest() throws Exception {
         // given
-        EventRequest eventRequest = new EventRequest();
-        eventRequest.setName("SpringBoot 스터디");
-        eventRequest.setContents("스프링 부트와 JPA 대한 학습");
-        eventRequest.setPrice(Event.MAX_PRICE + 1);
+        LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
+        EventRequest eventRequest = EventRequest.builder()
+                .name("SpringBoot 스터디")
+                .contents("스프링 부트와 JPA 대한 학습")
+                .price(Event.MAX_PRICE + 1)
+                .location("장은빌딩 18층 카페")
+                .availAbleParticipant(20)
+                .beginEnrollmentDateTime(beginEnrollmentDateTime)
+                .endEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1))
+                .beginEventDateTime(beginEventDateTime)
+                .endEventDateTime(beginEventDateTime.plusHours(8))
+                .build();
 
         // when & then
         this.mockMvc.perform(post(EVENT_RESOURCE)
-                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(objectMapper.writeValueAsString(eventRequest)))
+                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(eventRequest)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errorMessage").exists())
@@ -147,8 +154,8 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(post(EVENT_RESOURCE)
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -170,7 +177,7 @@ class EventControllerTest {
                 .andExpect(jsonPath("_links.profile").exists())
                 .andDo(document("read-event",
                         pathParameters(
-                            parameterWithName("id").description("이벤트 Id")
+                                parameterWithName("id").description("이벤트 Id")
                         ),
                         responseHeaders(
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description(MediaTypes.HAL_JSON_UTF8_VALUE)
@@ -244,9 +251,9 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(put(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(objectMapper.writeValueAsString(request)))
+                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("name").value(request.getName()))
@@ -260,7 +267,7 @@ class EventControllerTest {
                                 parameterWithName("id").description("이벤트 Id")
                         ),
                         requestFields(
-                               fieldDescriptorsOfEventRequest()
+                                fieldDescriptorsOfEventRequest()
                         ),
                         responseHeaders(
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description(MediaTypes.HAL_JSON_UTF8_VALUE)
@@ -293,8 +300,8 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(put(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -309,9 +316,9 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(put(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(invalidAccount))
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(objectMapper.writeValueAsString(request)))
+                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(invalidAccount))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
@@ -321,7 +328,7 @@ class EventControllerTest {
     void deleteEvent() throws Exception {
         // when & then
         this.mockMvc.perform(delete(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account)))
+                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content").exists())
@@ -360,7 +367,7 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(delete(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(invalidAccount)))
+                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(invalidAccount)))
                 .andDo(print())
                 .andExpect(status().isForbidden())
         ;
@@ -368,35 +375,38 @@ class EventControllerTest {
 
 
     private EventRequest getCreateEventRequest() {
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(10000);
-        request.setLocation("장은빌딩 18층 카페");
-        request.setAvailAbleParticipant(20);
         LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
         LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
-        return request;
+
+        return EventRequest.builder()
+                .name("SpringBoot 스터디")
+                .contents("스프링 부트와 JPA 대한 학습")
+                .price(10000)
+                .location("장은빌딩 18층 카페")
+                .availAbleParticipant(20)
+                .beginEnrollmentDateTime(beginEnrollmentDateTime)
+                .endEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1))
+                .beginEventDateTime(beginEventDateTime)
+                .endEventDateTime(beginEventDateTime.plusHours(8))
+                .build();
     }
 
     private EventRequest getUpdateEventRequest() {
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디 -> REST API 테스트");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(20000);
-        request.setLocation("삼성빌등 7층 카페");
-        request.setAvailAbleParticipant(20);
+
         LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
         LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
-        return request;
+
+        return EventRequest.builder()
+                .name("SpringBoot 스터디 -> REST API 테스트")
+                .contents("스프링 부트와 JPA 대한 학습")
+                .price(20000)
+                .location("삼성빌등 7층 카페")
+                .availAbleParticipant(20)
+                .beginEnrollmentDateTime(beginEnrollmentDateTime)
+                .endEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1))
+                .beginEventDateTime(beginEventDateTime)
+                .endEventDateTime(beginEventDateTime.plusHours(8))
+                .build();
     }
 
     private List<FieldDescriptor> fieldDescriptorsOfEventRequest() {

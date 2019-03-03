@@ -50,18 +50,21 @@ class EventServiceTest {
     }
 
     private EventRequest getCreateEventRequest() {
-        EventRequest request = new EventRequest();
-        request.setName("SpringBoot 스터디");
-        request.setContents("스프링 부트와 JPA 대한 학습");
-        request.setPrice(10000);
-        request.setLocation("장은빌딩 18층 카페");
-        request.setAvailAbleParticipant(20);
         LocalDateTime beginEnrollmentDateTime = LocalDateTime.now().plusMinutes(1);
         LocalDateTime beginEventDateTime = beginEnrollmentDateTime.plusMonths(1);
-        request.setBeginEnrollmentDateTime(beginEnrollmentDateTime);
-        request.setEndEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1));
-        request.setBeginEventDateTime(beginEventDateTime);
-        request.setEndEventDateTime(beginEventDateTime.plusHours(8));
+
+        EventRequest request = EventRequest.builder()
+                .name("SpringBoot 스터디")
+                .contents("스프링 부트와 JPA 대한 학습")
+                .price(10000)
+                .location("장은빌딩 18층 카페")
+                .availAbleParticipant(20)
+                .beginEnrollmentDateTime(beginEnrollmentDateTime)
+                .endEnrollmentDateTime(beginEnrollmentDateTime.plusDays(1))
+                .beginEventDateTime(beginEventDateTime)
+                .endEventDateTime(beginEventDateTime.plusHours(8))
+                .build();
+
         return request;
     }
 

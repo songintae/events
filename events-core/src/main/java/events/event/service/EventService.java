@@ -25,7 +25,6 @@ public class EventService {
 
     @Transactional
     public EventResponse createEvent(EventRequest request, Account register) {
-
         Event newEvent = Event.builder()
                 .name(request.getName())
                 .contents(request.getContents())
@@ -38,7 +37,6 @@ public class EventService {
                 .endEventDateTime(request.getEndEventDateTime())
                 .register(register)
                 .build();
-
         Event savedEvent = eventRepository.save(newEvent);
 
         return EventResponse.of(savedEvent);
@@ -56,8 +54,8 @@ public class EventService {
     public EventResponse updateEvent(Long id, Account account, EventRequest request) {
         Event savedEvent = findById(id);
         savedEvent.amendEvent(account, request);
-
         eventPublisher.publishEvent(new EventChangedEvent(savedEvent));
+
         return EventResponse.of(savedEvent);
     }
 
