@@ -47,7 +47,7 @@ public class EventService {
     }
 
     public Page<BriefEventResponse> readEvents(Pageable pageable) {
-        return eventRepository.findEvents(pageable);
+        return eventRepository.findEvents(pageable).map(BriefEventResponse::of);
     }
 
     @Transactional

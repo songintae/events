@@ -53,7 +53,7 @@ class EventControllerTest {
 
     private Account account;
     private Event savedEvent;
-    private final String EVENT_RESOURCE = "/api/v1/events";
+    private final String EVENT_RESOURCE = "/v1/api/events";
 
     @BeforeEach
     void setUp() {

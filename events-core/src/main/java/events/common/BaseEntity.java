@@ -16,7 +16,6 @@ import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Setter
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

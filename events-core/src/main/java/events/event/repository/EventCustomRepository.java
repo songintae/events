@@ -1,9 +1,9 @@
 package events.event.repository;
 
-import events.event.dto.BriefEventResponse;
+import events.event.domain.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface EventCustomRepository {
-    Page<BriefEventResponse> findEvents(Pageable pageable);
+    Page<Event> findEvents(Pageable pageable);
 }

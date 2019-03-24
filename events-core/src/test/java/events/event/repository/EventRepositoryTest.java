@@ -34,15 +34,15 @@ class EventRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         //when
-            Page<BriefEventResponse> events = eventRepository.findEvents(pageable);
+        Page<Event> events = eventRepository.findEvents(pageable);
 
         //then
         assertThat(events.getTotalPages()).isEqualTo(1);
         assertThat(events.getNumberOfElements()).isEqualTo(1);
 
-        BriefEventResponse event = events.getContent().get(0);
+        Event event = events.getContent().get(0);
         assertThat(event.getPrice()).isEqualTo(20000);
-        assertThat(event.getAttendancesCount()).isEqualTo(0);
+        assertThat(event.getAttendances().size()).isEqualTo(0);
     }
 
     private Event saveEvent() {

@@ -3,12 +3,12 @@ package events.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
+import events.event.domain.Event;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor @Getter
+@Getter
 public class BriefEventResponse {
     @JsonIgnore
     private Long id;
@@ -21,4 +21,19 @@ public class BriefEventResponse {
     private LocalDateTime beginEnrollmentDateTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime endEnrollmentDateTime;
+
+    public static BriefEventResponse of(Event event) {
+        BriefEventResponse instance = new BriefEventResponse();
+        instance.id = event.getId();
+        instance.name = event.getName();
+        instance.location = event.getLocation();
+        instance.price = event.getPrice();
+        instance.attendancesCount = event.getAttendances().size();
+        instance.availAbleParticipant = event.getAvailAbleParticipant();
+        instance.beginEnrollmentDateTime = event.getBeginEnrollmentDateTime();
+        instance.endEnrollmentDateTime = event.getEndEnrollmentDateTime();
+
+        return instance;
+    }
+
 }
