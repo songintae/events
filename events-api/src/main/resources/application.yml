@@ -2,3 +2,10 @@ spring:
   profiles:
     include:
       - core
+server:
+  tomcat:
+    accesslog:
+      buffered: true
+      directory: /event/logs/tomcat
+      enabled: true
+      pattern: "%{yyyy-MM-dd HH:mm:ss}t\t%s\t%r\t%{User-Agent}i\t%{Referer}i\t%a\t%b"
