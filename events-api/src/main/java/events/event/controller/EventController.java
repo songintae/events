@@ -2,8 +2,8 @@ package events.event.controller;
 
 
 import events.account.domain.Account;
-import events.account.domain.CurrentUser;
-import events.event.dto.BriefEventResponse;
+import events.account.domain.LoginUser;
+import events.event.dto.SummaryEventResponse;
 import events.event.dto.EventRequest;
 import events.event.dto.EventResponse;
 import events.event.service.EventService;
@@ -32,12 +32,12 @@ public class EventController {
     private EventService eventService;
 
     @PostMapping("")
-    public ResponseEntity create(@RequestBody @Valid EventRequest eventRequest, @CurrentUser Account account) {
+    public ResponseEntity create(@RequestBody @Valid EventRequest eventRequest, @LoginUser Account account) {
         EventResponse event = eventService.createEvent(eventRequest, account);
         ControllerLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(event.getId());
         URI location = selfLinkBuilder.toUri();
 
-        Resource<EventResponse> resource = getEventResponseResource(event);
+        Resource<EventResponse> resource = convertEventResponseToResource(event);
         resource.add(linkTo(EventController.class).slash(event.getId()).withRel("update"));
         resource.add(linkTo(EventController.class).slash(event.getId()).withRel("delete"));
         resource.add(new Link("http://localhost:8080/docs/index.html#resources-events-create").withRel("profile"));
@@ -45,10 +45,10 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity read(@PathVariable Long id, @CurrentUser Account account) {
+    public ResponseEntity read(@PathVariable Long id, @LoginUser Account account) {
         EventResponse event = eventService.readEvent(id);
 
-        Resource<EventResponse> resource = getEventResponseResource(event);
+        Resource<EventResponse> resource = convertEventResponseToResource(event);
         if(event.isRegister(account)) {
             resource.add(linkTo(EventController.class).slash(event.getId()).withRel("update"));
             resource.add(linkTo(EventController.class).slash(event.getId()).withRel("delete"));
@@ -58,11 +58,11 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity readList(@PageableDefault Pageable pageable, PagedResourcesAssembler<BriefEventResponse> assembler) {
-        Page<BriefEventResponse> page = eventService.readEvents(pageable);
+    public ResponseEntity readSummaries(@PageableDefault Pageable pageable, PagedResourcesAssembler<SummaryEventResponse> assembler) {
+        Page<SummaryEventResponse> page = eventService.readSummaryEvents(pageable);
 
-        PagedResources<Resource<BriefEventResponse>> response = assembler.toResource(page, event -> {
-            Resource<BriefEventResponse> resource = new Resource<>(event);
+        PagedResources<Resource<SummaryEventResponse>> response = assembler.toResource(page, event -> {
+            Resource<SummaryEventResponse> resource = new Resource<>(event);
             resource.add(linkTo(EventController.class).slash(event.getId()).withRel(Link.REL_SELF));
             resource.add(new Link("http://localhost:8080/docs/index.html#resources-events-list").withRel("profile"));
             return resource;
@@ -72,16 +72,16 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity update(@PathVariable Long id, @Valid @RequestBody EventRequest request, @CurrentUser Account account) {
+    public ResponseEntity update(@PathVariable Long id, @Valid @RequestBody EventRequest request, @LoginUser Account account) {
         EventResponse event =  eventService.updateEvent(id, account, request);
 
-        Resource<EventResponse> resource = getEventResponseResource(event);
+        Resource<EventResponse> resource = convertEventResponseToResource(event);
         resource.add(new Link("http://localhost:8080/docs/index.html#resources-events-update").withRel("profile"));
         return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id, @CurrentUser Account account) {
+    public ResponseEntity delete(@PathVariable Long id, @LoginUser Account account) {
         EventResponse event = eventService.deleteEvent(id, account);
 
         Resource<Long> resource = new Resource<>(event.getId());
@@ -90,7 +90,7 @@ public class EventController {
         return ResponseEntity.ok(resource);
     }
 
-    private Resource<EventResponse> getEventResponseResource(EventResponse event) {
+    private Resource<EventResponse> convertEventResponseToResource(EventResponse event) {
         Resource<EventResponse> resource = new Resource<>(event);
         resource.add(linkTo(EventController.class).slash(event.getId()).withRel(Link.REL_SELF));
         resource.add(linkTo(EventController.class).withRel("events"));

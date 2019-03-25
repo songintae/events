@@ -5,7 +5,7 @@ import events.account.domain.Account;
 import events.common.ResourceNotFoundException;
 import events.event.domain.Event;
 import events.event.domain.EventChangedEvent;
-import events.event.dto.BriefEventResponse;
+import events.event.dto.SummaryEventResponse;
 import events.event.dto.EventRequest;
 import events.event.dto.EventResponse;
 import events.event.repository.EventRepository;
@@ -46,8 +46,8 @@ public class EventService {
         return EventResponse.of(findById(id));
     }
 
-    public Page<BriefEventResponse> readEvents(Pageable pageable) {
-        return eventRepository.findEvents(pageable).map(BriefEventResponse::of);
+    public Page<SummaryEventResponse> readSummaryEvents(Pageable pageable) {
+        return eventRepository.findEvents(pageable).map(SummaryEventResponse::of);
     }
 
     @Transactional

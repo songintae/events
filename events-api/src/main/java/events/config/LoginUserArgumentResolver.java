@@ -1,7 +1,7 @@
 package events.config;
 
 import events.account.domain.Account;
-import events.account.domain.CurrentUser;
+import events.account.domain.LoginUser;
 import events.common.SessionUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ObjectUtils;
@@ -10,10 +10,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-public class LoginArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(CurrentUser.class);
+        return parameter.hasParameterAnnotation(LoginUser.class);
     }
 
     @Override

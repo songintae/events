@@ -9,7 +9,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class BriefEventResponse {
+public class SummaryEventResponse {
     @JsonIgnore
     private Long id;
     private String name;
@@ -22,8 +22,8 @@ public class BriefEventResponse {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime endEnrollmentDateTime;
 
-    public static BriefEventResponse of(Event event) {
-        BriefEventResponse instance = new BriefEventResponse();
+    public static SummaryEventResponse of(Event event) {
+        SummaryEventResponse instance = new SummaryEventResponse();
         instance.id = event.getId();
         instance.name = event.getName();
         instance.location = event.getLocation();

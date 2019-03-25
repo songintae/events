@@ -29,7 +29,7 @@ public class WebConfiguration implements WebMvcConfigurer {
 
     @Bean
     public HandlerMethodArgumentResolver loginArgumentResolver() {
-        return new LoginArgumentResolver();
+        return new LoginUserArgumentResolver();
     }
 
     @Bean

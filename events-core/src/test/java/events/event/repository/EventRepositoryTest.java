@@ -4,7 +4,6 @@ import events.account.domain.Account;
 import events.account.repository.AccountRepository;
 import events.config.EventsJpaTestConfiguration;
 import events.event.domain.Event;
-import events.event.dto.BriefEventResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
