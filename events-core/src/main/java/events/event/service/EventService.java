@@ -38,7 +38,6 @@ public class EventService {
                 .register(register)
                 .build();
         Event savedEvent = eventRepository.save(newEvent);
-
         return EventResponse.of(savedEvent);
     }
 

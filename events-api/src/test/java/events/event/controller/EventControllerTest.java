@@ -218,26 +218,26 @@ class EventControllerTest {
         this.mockMvc.perform(get(EVENT_RESOURCE))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("_embedded.briefEventResponseList[0].name").exists())
-                .andExpect(jsonPath("_embedded.briefEventResponseList[0].price").exists())
-                .andExpect(jsonPath("_embedded.briefEventResponseList[0].location").exists())
-                .andExpect(jsonPath("_embedded.briefEventResponseList[0].attendancesCount").exists())
-                .andExpect(jsonPath("_embedded.briefEventResponseList[0].availAbleParticipant").exists())
-                .andExpect(jsonPath("_embedded.briefEventResponseList[0].beginEnrollmentDateTime").exists())
-                .andExpect(jsonPath("_embedded.briefEventResponseList[0].endEnrollmentDateTime").exists())
+                .andExpect(jsonPath("_embedded.summaryEventResponseList[0].name").exists())
+                .andExpect(jsonPath("_embedded.summaryEventResponseList[0].price").exists())
+                .andExpect(jsonPath("_embedded.summaryEventResponseList[0].location").exists())
+                .andExpect(jsonPath("_embedded.summaryEventResponseList[0].attendancesCount").exists())
+                .andExpect(jsonPath("_embedded.summaryEventResponseList[0].availAbleParticipant").exists())
+                .andExpect(jsonPath("_embedded.summaryEventResponseList[0].beginEnrollmentDateTime").exists())
+                .andExpect(jsonPath("_embedded.summaryEventResponseList[0].endEnrollmentDateTime").exists())
                 .andDo(document("read-events",
                         responseHeaders(
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description(MediaTypes.HAL_JSON_UTF8_VALUE)
                         ),
                         relaxedResponseFields(
-                                fieldWithPath("_embedded.briefEventResponseList[]").description("Event 목록 리스트"),
-                                fieldWithPath("_embedded.briefEventResponseList[].price").description("이벤트 명"),
-                                fieldWithPath("_embedded.briefEventResponseList[].price").description("이벤트 가격"),
-                                fieldWithPath("_embedded.briefEventResponseList[].location").description("이벤트 장소"),
-                                fieldWithPath("_embedded.briefEventResponseList[].attendancesCount").description("참석 인원"),
-                                fieldWithPath("_embedded.briefEventResponseList[].availAbleParticipant").description("참석 가능 인원"),
-                                fieldWithPath("_embedded.briefEventResponseList[].beginEnrollmentDateTime").description("이벤트 등록 시작시간"),
-                                fieldWithPath("_embedded.briefEventResponseList[].endEnrollmentDateTime").description("이벤트 등록 종료시간")
+                                fieldWithPath("_embedded.summaryEventResponseList[]").description("Event 목록 리스트"),
+                                fieldWithPath("_embedded.summaryEventResponseList[].price").description("이벤트 명"),
+                                fieldWithPath("_embedded.summaryEventResponseList[].price").description("이벤트 가격"),
+                                fieldWithPath("_embedded.summaryEventResponseList[].location").description("이벤트 장소"),
+                                fieldWithPath("_embedded.summaryEventResponseList[].attendancesCount").description("참석 인원"),
+                                fieldWithPath("_embedded.summaryEventResponseList[].availAbleParticipant").description("참석 가능 인원"),
+                                fieldWithPath("_embedded.summaryEventResponseList[].beginEnrollmentDateTime").description("이벤트 등록 시작시간"),
+                                fieldWithPath("_embedded.summaryEventResponseList[].endEnrollmentDateTime").description("이벤트 등록 종료시간")
                         )
                 ))
         ;

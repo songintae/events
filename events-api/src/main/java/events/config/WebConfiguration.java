@@ -1,8 +1,8 @@
 package events.config;
 
-import events.common.AuditorHolder;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -14,11 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
-    private AuditorHolder auditorHolder;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(auditorInterceptor());
         registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/v1/api/events/**");
     }
 
@@ -33,8 +31,16 @@ public class WebConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    public AuditorInterceptor auditorInterceptor() {
-        return new AuditorInterceptor(auditorHolder);
+    FilterRegistrationBean<AuditorFilter> auditorFilterFilterRegistrationBean() {
+        FilterRegistrationBean<AuditorFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(auditorFilter());
+        registrationBean.addUrlPatterns("/*");
+        return registrationBean;
+    }
+
+    @Bean
+    public AuditorFilter auditorFilter() {
+        return new AuditorFilter();
     }
 
     @Bean
