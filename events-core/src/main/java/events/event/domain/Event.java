@@ -6,6 +6,7 @@ import events.common.UnAuthorizationException;
 import events.event.dto.EventRequest;
 import events.event.exception.EventException;
 import lombok.*;
+import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.util.ObjectUtils;
@@ -19,6 +20,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Getter
+@AuditOverride(forClass = BaseEntity.class)
 @Audited
 @Entity
 public class Event extends BaseEntity {
