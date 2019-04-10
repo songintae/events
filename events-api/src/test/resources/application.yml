@@ -3,3 +3,7 @@ spring:
     serialization:
       indent-output: true
 
+
+logging:
+  level:
+    org.springframework.security: DEBUG

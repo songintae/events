@@ -2,6 +2,7 @@ package events.event.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import events.account.domain.Account;
+import events.account.domain.AccountDetail;
 import events.account.service.AccountService;
 import events.config.BasicAuthFilter;
 import events.config.EventsBootTestConfiguration;
@@ -33,6 +34,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -69,9 +71,10 @@ class EventControllerTest {
 
         // when
         this.mockMvc.perform(post(EVENT_RESOURCE)
-                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(request)))
+                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(objectMapper.writeValueAsString(request))
+                    .with(user(new AccountDetail(account))))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
@@ -137,29 +140,15 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(post(EVENT_RESOURCE)
-                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(eventRequest)))
+                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(objectMapper.writeValueAsString(eventRequest))
+                    .with(user(new AccountDetail(account))))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errorMessage").exists())
         ;
     }
-
-    @Test
-    @DisplayName("인증된 사용자만 이벤트를 생성할 수 있다.")
-    public void create401Test() throws Exception {
-        // given
-        EventRequest request = getCreateEventRequest();
-
-        // when & then
-        this.mockMvc.perform(post(EVENT_RESOURCE)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
-
 
     @Test
     @DisplayName("Event 단건 조회 테스트")
@@ -251,9 +240,10 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(put(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(request)))
+                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account))
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(objectMapper.writeValueAsString(request))
+                .with(user(new AccountDetail(account))))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("name").value(request.getName()))
@@ -293,20 +283,6 @@ class EventControllerTest {
     }
 
     @Test
-    @DisplayName("인증된 사용자만 이벤트를 수정할 수 있다.")
-    void update401Test() throws Exception {
-        // given
-        EventRequest request = getUpdateEventRequest();
-
-        // when & then
-        this.mockMvc.perform(put(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(request)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
     @DisplayName("등록한 사용자만 이벤트를 수정할 수 있다.")
     void update403Test() throws Exception {
         // given
@@ -316,9 +292,10 @@ class EventControllerTest {
 
         // when & then
         this.mockMvc.perform(put(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(invalidAccount))
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectMapper.writeValueAsString(request)))
+                    .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(invalidAccount))
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(objectMapper.writeValueAsString(request))
+                    .with(user(new AccountDetail(invalidAccount))))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
@@ -328,7 +305,7 @@ class EventControllerTest {
     void deleteEvent() throws Exception {
         // when & then
         this.mockMvc.perform(delete(EVENT_RESOURCE + "/{id}", savedEvent.getId())
-                .header(HttpHeaders.AUTHORIZATION, getBasicAuthHeader(account)))
+                    .with(user(new AccountDetail(account))))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("content").exists())
@@ -350,16 +327,6 @@ class EventControllerTest {
 
     @Test
     @DisplayName("Event 삭제 인가 테스트")
-    void delete401Test() throws Exception {
-        // when & then
-        this.mockMvc.perform(delete(EVENT_RESOURCE + "/{id}", savedEvent.getId()))
-                .andDo(print())
-                .andExpect(status().isUnauthorized())
-        ;
-    }
-
-    @Test
-    @DisplayName("Event 삭제 인증 테스트")
     void delete403Test() throws Exception {
         // given
         Account invalidAccount = accountService.createAccount("invalidUser@email.com", MockEvnetsEntityHelper.DEFAULT_PASSWORD);
