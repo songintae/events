@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/events?useSSL=false&serverTimezone=Asia/Seoul
-    username: root
-    password: song9207108
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/events?useSSL=false&serverTimezone=Asia/Seoul
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD}
 
   jpa:
     show-sql: true
