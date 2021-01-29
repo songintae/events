@@ -12,7 +12,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .mvcMatchers(HttpMethod.GET, "/v1/api/**").permitAll()
-                .mvcMatchers(HttpMethod.GET, "/health/**").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                 .anyRequest().authenticated();
     }
 }
