@@ -11,8 +11,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                    .mvcMatchers(HttpMethod.GET, "/v1/api/**").permitAll()
-                    .anyRequest().authenticated();
-
+                .mvcMatchers(HttpMethod.GET, "/v1/api/**").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/health/**").permitAll()
+                .anyRequest().authenticated();
     }
 }

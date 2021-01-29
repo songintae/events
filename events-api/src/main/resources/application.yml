@@ -2,10 +2,6 @@ spring:
   profiles:
     include:
       - core
-  boot:
-    admin:
-      client:
-        url: "http://localhost:18080"
 server:
   tomcat:
     accesslog:
